@@ -14,9 +14,17 @@
 
 #include "sizes.h"
 
+#ifdef __VMS
+typedef unsigned long long ul;
+#else
 typedef unsigned long ul;
+#endif
 typedef unsigned long long ull;
+#ifdef __VMS
+typedef unsigned long long volatile ulv;
+#else
 typedef unsigned long volatile ulv;
+#endif
 typedef unsigned char volatile u8v;
 typedef unsigned short volatile u16v;
 

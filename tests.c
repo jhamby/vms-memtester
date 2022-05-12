@@ -49,12 +49,21 @@ int compare_regions(ulv *bufa, ulv *bufb, size_t count) {
             if (use_phys) {
                 physaddr = physaddrbase + (i * sizeof(ul));
                 fprintf(stderr,
+#ifdef __VMS
+                        "FAILURE: 0x%08llx != 0x%08llx at physical address "
+                        "0x%08llx.\n",
+#else
                         "FAILURE: 0x%08lx != 0x%08lx at physical address "
                         "0x%08lx.\n",
+#endif
                         (ul) *p1, (ul) *p2, physaddr);
             } else {
                 fprintf(stderr,
+#ifdef __VMS
+                        "FAILURE: 0x%08llx != 0x%08llx at offset 0x%08llx.\n",
+#else
                         "FAILURE: 0x%08lx != 0x%08lx at offset 0x%08lx.\n",
+#endif
                         (ul) *p1, (ul) *p2, (ul) (i * sizeof(ul)));
             }
             /* printf("Skipping to next test..."); */
@@ -91,7 +100,11 @@ int test_stuck_address(ulv *bufa, size_t count) {
                 } else {
                     fprintf(stderr,
                             "FAILURE: possible bad address line at offset "
+#ifdef __VMS
+                            "0x%08llx.\n",
+#else
                             "0x%08lx.\n",
+#endif
                             (ul) (i * sizeof(ul)));
                 }
                 printf("Skipping to next test...\n");
