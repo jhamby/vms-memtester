@@ -28,7 +28,9 @@
 #ifdef __VMS
 #define __NEW_STARLET 1
 #include <lib$routines.h>
+#include <psldef.h>
 #include <ssdef.h>
+#include <starlet.h>
 #endif
 
 #include "types.h"
@@ -360,6 +362,36 @@ int main(int argc, char **argv) {
             if (lib$get_vm_64(&wantbytes, &buf) != SS$_NORMAL) {
                 buf = NULL;
             }
+#if 0
+            /* The default limits are too small for this to be useful. */
+            void *locked_buf;
+            unsigned __int64 locked_len;
+            int rc = sys$lkwset_64(buf, wantbytes, PSL$C_USER,
+                                   &locked_buf, &locked_len);
+            switch (rc) {
+            case SS$_WASCLR:
+            case SS$_WASSET:
+               printf("locked pages.\n");
+               break;
+
+            case SS$_LCKPAGFUL:
+               printf("system-wide page lock limit reached\n");
+               lib$free_vm_64(&wantbytes, &buf);
+               buf = NULL;
+               break;
+
+            case SS$_LKWSETFUL:
+               printf("locked working set is full\n");
+               lib$free_vm_64(&wantbytes, &buf);
+               buf = NULL;
+               break;
+
+            default:
+               printf("VMS error: %d\n", rc);
+               /* continue anyway */
+               break;
+            }
+#endif
 #else
             buf = (void volatile *) malloc(wantbytes);
 #endif
@@ -487,7 +519,19 @@ int main(int argc, char **argv) {
             }
             fflush(stdout);
             /* clear buffer */
+#ifdef __VMS
+            ul clearbytes = wantbytes;
+            char *clearbuf = (char *) buf;
+            const ul max_clear_bytes = 0x7fdfe000;    /* max size that works */
+            while (clearbytes > 0xffffffffULL) {
+                memset(clearbuf, 255, max_clear_bytes);
+                clearbuf += max_clear_bytes;
+                clearbytes -= max_clear_bytes;
+            }
+            memset(clearbuf, 255, clearbytes);
+#else
             memset((void *) buf, 255, wantbytes);
+#endif
         }
         printf("\n");
         fflush(stdout);

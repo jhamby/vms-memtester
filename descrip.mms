@@ -12,11 +12,11 @@ CFLAGS=$(OPT_FLAGS)/FLOAT=IEEE/IEEE=DENORM/POI=LONG/MAIN=POSIX_EXIT-
 memtester.exe :     memtester.obj, output.obj, tests.obj
          link $(MMS$SOURCE_LIST)
 
-memtester.obj :     memtester.c, sizes.h, tests.h, types.h, output.h
+memtester.obj :     memtester.c, memtester.h, sizes.h, tests.h, types.h, output.h
 
 output.obj :        output.c, output.h
 
-tests.obj :         tests.c, memtester.h, sizes.h, types.h, output.h
+tests.obj :         tests.c, memtester.h, sizes.h, tests.h, types.h, output.h
 
 clean :
          delete/nolog memtester.exe;*, *.obj;*

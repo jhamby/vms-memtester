@@ -22,6 +22,7 @@
 #include "sizes.h"
 #include "memtester.h"
 #include "output.h"
+#include "tests.h"
 
 #define ONE 0x00000001L
 
@@ -37,12 +38,12 @@ union {
 
 /* Function definitions. */
 
-int compare_regions(ulv *bufa, ulv *bufb, size_t count) {
+int compare_regions(ulv *bufa, ulv *bufb, ul count) {
     int r = 0;
-    size_t i;
+    ul i;
     ulv *p1 = bufa;
     ulv *p2 = bufb;
-    off_t physaddr;
+    ul physaddr;
 
     for (i = 0; i < count; i++, p1++, p2++) {
         if (*p1 != *p2) {
@@ -73,11 +74,11 @@ int compare_regions(ulv *bufa, ulv *bufb, size_t count) {
     return r;
 }
 
-int test_stuck_address(ulv *bufa, size_t count) {
+int test_stuck_address(ulv *bufa, ul count) {
     ulv *p1 = bufa;
     unsigned int j;
-    size_t i;
-    off_t physaddr;
+    ul i;
+    ul physaddr;
 
     out_test_start();
     for (j = 0; j < 16; j++) {
@@ -95,7 +96,11 @@ int test_stuck_address(ulv *bufa, size_t count) {
                     physaddr = physaddrbase + (i * sizeof(ul));
                     fprintf(stderr,
                             "FAILURE: possible bad address line at physical "
+#ifdef __VMS
+                            "address 0x%08llx.\n",
+#else
                             "address 0x%08lx.\n",
+#endif
                             physaddr);
                 } else {
                     fprintf(stderr,
@@ -117,10 +122,10 @@ int test_stuck_address(ulv *bufa, size_t count) {
     return 0;
 }
 
-int test_random_value(ulv *bufa, ulv *bufb, size_t count) {
+int test_random_value(ulv *bufa, ulv *bufb, ul count) {
     ulv *p1 = bufa;
     ulv *p2 = bufb;
-    size_t i;
+    ul i;
 
     out_wheel_start();
     for (i = 0; i < count; i++) {
@@ -131,10 +136,10 @@ int test_random_value(ulv *bufa, ulv *bufb, size_t count) {
     return compare_regions(bufa, bufb, count);
 }
 
-int test_xor_comparison(ulv *bufa, ulv *bufb, size_t count) {
+int test_xor_comparison(ulv *bufa, ulv *bufb, ul count) {
     ulv *p1 = bufa;
     ulv *p2 = bufb;
-    size_t i;
+    ul i;
     ul q = rand_ul();
 
     for (i = 0; i < count; i++) {
@@ -144,10 +149,10 @@ int test_xor_comparison(ulv *bufa, ulv *bufb, size_t count) {
     return compare_regions(bufa, bufb, count);
 }
 
-int test_sub_comparison(ulv *bufa, ulv *bufb, size_t count) {
+int test_sub_comparison(ulv *bufa, ulv *bufb, ul count) {
     ulv *p1 = bufa;
     ulv *p2 = bufb;
-    size_t i;
+    ul i;
     ul q = rand_ul();
 
     for (i = 0; i < count; i++) {
@@ -157,10 +162,10 @@ int test_sub_comparison(ulv *bufa, ulv *bufb, size_t count) {
     return compare_regions(bufa, bufb, count);
 }
 
-int test_mul_comparison(ulv *bufa, ulv *bufb, size_t count) {
+int test_mul_comparison(ulv *bufa, ulv *bufb, ul count) {
     ulv *p1 = bufa;
     ulv *p2 = bufb;
-    size_t i;
+    ul i;
     ul q = rand_ul();
 
     for (i = 0; i < count; i++) {
@@ -170,10 +175,10 @@ int test_mul_comparison(ulv *bufa, ulv *bufb, size_t count) {
     return compare_regions(bufa, bufb, count);
 }
 
-int test_div_comparison(ulv *bufa, ulv *bufb, size_t count) {
+int test_div_comparison(ulv *bufa, ulv *bufb, ul count) {
     ulv *p1 = bufa;
     ulv *p2 = bufb;
-    size_t i;
+    ul i;
     ul q = rand_ul();
 
     for (i = 0; i < count; i++) {
@@ -186,10 +191,10 @@ int test_div_comparison(ulv *bufa, ulv *bufb, size_t count) {
     return compare_regions(bufa, bufb, count);
 }
 
-int test_or_comparison(ulv *bufa, ulv *bufb, size_t count) {
+int test_or_comparison(ulv *bufa, ulv *bufb, ul count) {
     ulv *p1 = bufa;
     ulv *p2 = bufb;
-    size_t i;
+    ul i;
     ul q = rand_ul();
 
     for (i = 0; i < count; i++) {
@@ -199,10 +204,10 @@ int test_or_comparison(ulv *bufa, ulv *bufb, size_t count) {
     return compare_regions(bufa, bufb, count);
 }
 
-int test_and_comparison(ulv *bufa, ulv *bufb, size_t count) {
+int test_and_comparison(ulv *bufa, ulv *bufb, ul count) {
     ulv *p1 = bufa;
     ulv *p2 = bufb;
-    size_t i;
+    ul i;
     ul q = rand_ul();
 
     for (i = 0; i < count; i++) {
@@ -212,10 +217,10 @@ int test_and_comparison(ulv *bufa, ulv *bufb, size_t count) {
     return compare_regions(bufa, bufb, count);
 }
 
-int test_seqinc_comparison(ulv *bufa, ulv *bufb, size_t count) {
+int test_seqinc_comparison(ulv *bufa, ulv *bufb, ul count) {
     ulv *p1 = bufa;
     ulv *p2 = bufb;
-    size_t i;
+    ul i;
     ul q = rand_ul();
 
     for (i = 0; i < count; i++) {
@@ -224,12 +229,12 @@ int test_seqinc_comparison(ulv *bufa, ulv *bufb, size_t count) {
     return compare_regions(bufa, bufb, count);
 }
 
-int test_solidbits_comparison(ulv *bufa, ulv *bufb, size_t count) {
+int test_solidbits_comparison(ulv *bufa, ulv *bufb, ul count) {
     ulv *p1 = bufa;
     ulv *p2 = bufb;
     unsigned int j;
     ul q;
-    size_t i;
+    ul i;
 
     out_test_start();
     for (j = 0; j < 64; j++) {
@@ -249,12 +254,12 @@ int test_solidbits_comparison(ulv *bufa, ulv *bufb, size_t count) {
     return 0;
 }
 
-int test_checkerboard_comparison(ulv *bufa, ulv *bufb, size_t count) {
+int test_checkerboard_comparison(ulv *bufa, ulv *bufb, ul count) {
     ulv *p1 = bufa;
     ulv *p2 = bufb;
     unsigned int j;
     ul q;
-    size_t i;
+    ul i;
 
     out_test_start();
     for (j = 0; j < 64; j++) {
@@ -274,11 +279,11 @@ int test_checkerboard_comparison(ulv *bufa, ulv *bufb, size_t count) {
     return 0;
 }
 
-int test_blockseq_comparison(ulv *bufa, ulv *bufb, size_t count) {
+int test_blockseq_comparison(ulv *bufa, ulv *bufb, ul count) {
     ulv *p1 = bufa;
     ulv *p2 = bufb;
     unsigned int j;
-    size_t i;
+    ul i;
 
     out_test_start();
     for (j = 0; j < 256; j++) {
@@ -297,11 +302,11 @@ int test_blockseq_comparison(ulv *bufa, ulv *bufb, size_t count) {
     return 0;
 }
 
-int test_walkbits0_comparison(ulv *bufa, ulv *bufb, size_t count) {
+int test_walkbits0_comparison(ulv *bufa, ulv *bufb, ul count) {
     ulv *p1 = bufa;
     ulv *p2 = bufb;
     unsigned int j;
-    size_t i;
+    ul i;
 
     out_test_start();
     for (j = 0; j < UL_LEN * 2; j++) {
@@ -324,11 +329,11 @@ int test_walkbits0_comparison(ulv *bufa, ulv *bufb, size_t count) {
     return 0;
 }
 
-int test_walkbits1_comparison(ulv *bufa, ulv *bufb, size_t count) {
+int test_walkbits1_comparison(ulv *bufa, ulv *bufb, ul count) {
     ulv *p1 = bufa;
     ulv *p2 = bufb;
     unsigned int j;
-    size_t i;
+    ul i;
 
     out_test_start();
     for (j = 0; j < UL_LEN * 2; j++) {
@@ -351,11 +356,11 @@ int test_walkbits1_comparison(ulv *bufa, ulv *bufb, size_t count) {
     return 0;
 }
 
-int test_bitspread_comparison(ulv *bufa, ulv *bufb, size_t count) {
+int test_bitspread_comparison(ulv *bufa, ulv *bufb, ul count) {
     ulv *p1 = bufa;
     ulv *p2 = bufb;
     unsigned int j;
-    size_t i;
+    ul i;
 
     out_test_start();
     for (j = 0; j < UL_LEN * 2; j++) {
@@ -384,12 +389,12 @@ int test_bitspread_comparison(ulv *bufa, ulv *bufb, size_t count) {
     return 0;
 }
 
-int test_bitflip_comparison(ulv *bufa, ulv *bufb, size_t count) {
+int test_bitflip_comparison(ulv *bufa, ulv *bufb, ul count) {
     ulv *p1 = bufa;
     ulv *p2 = bufb;
     unsigned int j, k;
     ul q;
-    size_t i;
+    ul i;
 
     out_test_start();
     for (k = 0; k < UL_LEN; k++) {
@@ -414,12 +419,12 @@ int test_bitflip_comparison(ulv *bufa, ulv *bufb, size_t count) {
 }
 
 #ifdef TEST_NARROW_WRITES
-int test_8bit_wide_random(ulv* bufa, ulv* bufb, size_t count) {
+int test_8bit_wide_random(ulv* bufa, ulv* bufb, ul count) {
     u8v *p1, *t;
     ulv *p2;
     int attempt;
     unsigned int b;
-    size_t i;
+    ul i;
 
     out_wheel_start();
     for (attempt = 0; attempt < 2;  attempt++) {
@@ -446,12 +451,12 @@ int test_8bit_wide_random(ulv* bufa, ulv* bufb, size_t count) {
     return 0;
 }
 
-int test_16bit_wide_random(ulv* bufa, ulv* bufb, size_t count) {
+int test_16bit_wide_random(ulv* bufa, ulv* bufb, ul count) {
     u16v *p1, *t;
     ulv *p2;
     int attempt;
     unsigned int b;
-    size_t i;
+    ul i;
 
     out_wheel_start();
     for (attempt = 0; attempt < 2; attempt++) {
