@@ -523,7 +523,7 @@ int main(int argc, char **argv) {
             ul clearbytes = wantbytes;
             char *clearbuf = (char *) buf;
             const ul max_clear_bytes = 0x7fdfe000;    /* max size that works */
-            while (clearbytes > 0xffffffffULL) {
+            while (clearbytes > max_clear_bytes) {
                 memset(clearbuf, 255, max_clear_bytes);
                 clearbuf += max_clear_bytes;
                 clearbytes -= max_clear_bytes;

@@ -2,7 +2,7 @@
 ! 64-bit memtester for OpenVMS
 !
 
-.IFDEF ALPHA_EV67
+.IFDEF MMSALPHA
 OPT_FLAGS=/ARCH=EV67
 .ENDIF
 
